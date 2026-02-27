@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 233 24% 15%;
+    /* #1e1e2e */
+    --foreground: 0 0% 100%;
+    /* White */
+
+    --card: 233 24% 20%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 233 24% 15%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 43 96% 56%;
+    /* #fbbf24 Arcade Yellow */
+    --primary-foreground: 233 24% 15%;
+
+    --secondary: 217 91% 60%;
+    /* #3b82f6 8-bit Blue */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 233 24% 25%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 0 84% 60%;
+    /* #ef4444 Health Potion Red */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 0%;
+    /* Solid black for chunky borders */
+    --input: 233 24% 25%;
+    --ring: 43 96% 56%;
+
+    --radius: 0rem;
+    /* Absolutely no rounded corners in retro */
+  }
+
+  .dark {
+    /* Identical to light mode since retro games don't traditionally have light/dark modes, just pure dark arcade feel */
+    --background: 233 24% 15%;
+    --foreground: 0 0% 100%;
+
+    --card: 233 24% 20%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 233 24% 15%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 43 96% 56%;
+    --primary-foreground: 233 24% 15%;
+
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 233 24% 25%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 0%;
+    --input: 233 24% 25%;
+    --ring: 43 96% 56%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 48px;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'VT323', monospace;
+    font-size: 1.25rem;
+    cursor: crosshair;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Press Start 2P', cursive;
+    text-transform: uppercase;
+    line-height: 1.5;
+  }
+}
+
+@layer utilities {
+  .crt-overlay {
+    @apply pointer-events-none fixed inset-0 z-[9999];
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 155, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    animation: flicker 0.15s infinite;
+  }
+
+  .pixel-border {
+    @apply border-4 border-solid border-foreground bg-background;
+    box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 1);
+    image-rendering: pixelated;
+  }
+
+  .pixel-shadow {
+    box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  }
+
+  .text-pixel {
+    @apply font-bold tracking-widest;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+  }
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.95;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0.95;
+  }
+}
