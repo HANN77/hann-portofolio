@@ -11,7 +11,7 @@ export const AboutSection = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-4xl md:text-5xl font-['Press_Start_2P',_cursive] text-primary mb-12 text-center text-pixel"
+                    className="text-4xl md:text-5xl font-['Press_Start_2P',_cursive] text-secondary mb-12 text-center text-pixel"
                 >
                     PLAYER INFO
                 </motion.h2>
@@ -22,12 +22,12 @@ export const AboutSection = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    className="w-full pixel-border bg-background mb-12 p-6 flex flex-col md:flex-row justify-between gap-6 font-['Press_Start_2P',_cursive] text-xs md:text-sm text-white"
+                    className="w-full pixel-border bg-[#0000aa]/90 backdrop-blur-sm mb-12 p-6 flex flex-col md:flex-row justify-between gap-6 font-['Press_Start_2P',_cursive] text-xs md:text-sm text-white"
                 >
-                    <div className="flex flex-col gap-2"><span className="text-muted-foreground">NAME</span>HANIEL PRATAMA</div>
-                    <div className="flex flex-col gap-2"><span className="text-muted-foreground">CLASS</span>FULL STACK</div>
-                    <div className="flex flex-col gap-2"><span className="text-muted-foreground">LVL</span>1 (BEGINNER)</div>
-                    <div className="flex flex-col gap-2"><span className="text-muted-foreground">BASE</span>PALEMBANG / REMOTE</div>
+                    <div className="flex flex-col gap-2"><span className="text-blue-300">NAME</span>HANIEL PRATAMA</div>
+                    <div className="flex flex-col gap-2"><span className="text-blue-300">CLASS</span>FULL STACK</div>
+                    <div className="flex flex-col gap-2"><span className="text-blue-300">LVL</span>1 (BEGINNER)</div>
+                    <div className="flex flex-col gap-2"><span className="text-blue-300">BASE</span>PALEMBANG / REMOTE</div>
                 </motion.div>
 
                 {/* Classic RPG Dialogue Box */}
@@ -36,7 +36,7 @@ export const AboutSection = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="w-full relative pixel-border bg-[#0000aa] border-white p-6 md:p-10 flex flex-col md:flex-row gap-8 md:gap-12 items-start shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
+                    className="w-full relative pixel-border bg-[#0000aa]/90 backdrop-blur-sm border-white p-6 md:p-10 flex flex-col md:flex-row gap-8 md:gap-12 items-start shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
                 >
                     {/* Character Portrait */}
                     <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 pixel-border border-white overflow-hidden bg-black p-1 shadow-none">

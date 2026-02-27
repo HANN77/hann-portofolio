@@ -1,114 +1,121 @@
 import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
-interface LeafProps {
-    width: number;
-    height: number;
-    left: number;
-    speed: number;
-    opacity: number;
+interface ParticleProps {
+    size: number;
+    x: number;
+    y: number;
+    duration: number;
     delay: number;
-    rotate: number;
 }
 
-const Leaf = ({ width, height, left, speed, opacity, delay, rotate }: LeafProps) => {
+const FloatingPollen = () => {
+    const [particles, setParticles] = useState<ParticleProps[]>([]);
+
+    useEffect(() => {
+        const newParticles = Array.from({ length: 40 }).map(() => ({
+            size: Math.random() > 0.8 ? 4 : 2,
+            x: Math.random() * 100,
+            y: Math.random() * 100,
+            duration: Math.random() * 5 + 3,
+            delay: Math.random() * 5,
+        }));
+        setParticles(newParticles);
+    }, []);
+
     return (
-        <div
-            className="absolute rounded-none pointer-events-none leaf-fall"
-            style={{
-                width: `${width}px`,
-                height: `${height}px`,
-                left: `${left}%`,
-                background: `rgba(46, 139, 87, ${opacity})`, // SeaGreen
-                boxShadow: '4px 4px 0px rgba(0, 0, 0, 0.3)', // signature chunky pixel shadow
-                animationDuration: `${speed}s`,
-                animationDelay: `-${delay}s`, // start immediately at varied vertical positions
-                transform: `rotate(${rotate}deg)`,
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+            {particles.map((p, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute bg-[#eab308] opacity-60" // Yellow pollen
+                    style={{
+                        width: p.size,
+                        height: p.size,
+                        left: `${p.x}%`,
+                        top: `${p.y}%`,
+                        boxShadow: '0 0 4px rgba(234, 179, 8, 0.8)'
+                    }}
+                    animate={{
+                        y: ["-10px", "10px", "-10px"],
+                        x: ["-5px", "5px", "-5px"],
+                        opacity: [0.3, 0.8, 0.3],
+                    }}
+                    transition={{
+                        duration: p.duration,
+                        repeat: Infinity,
+                        delay: p.delay,
+                        ease: "easeInOut"
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
+
+const PixelSun = () => {
+    return (
+        <motion.div
+            className="absolute top-8 left-8 md:top-16 md:left-24 pointer-events-none opacity-90 z-0"
+            animate={{
+                rotate: 360,
             }}
-        />
+            transition={{
+                duration: 60,
+                repeat: Infinity,
+                ease: "linear"
+            }}
+        >
+            {/* Minimal CSS Pixel Sun */}
+            <div className="relative w-24 h-24 md:w-32 md:h-32">
+                <div className="absolute inset-2 bg-yellow-300 rounded-full blur-[4px] opacity-40" />
+                <div className="absolute top-[10%] left-[30%] w-[40%] h-[80%] bg-yellow-400 pixel-shadow" />
+                <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-yellow-400 pixel-shadow" />
+                <div className="absolute top-[30%] left-[10%] w-[80%] h-[40%] bg-yellow-400 pixel-shadow" />
+
+                {/* Sun Rays */}
+                <div className="absolute top-[-10%] left-[45%] w-[10%] h-[20%] bg-yellow-300" />
+                <div className="absolute bottom-[-10%] left-[45%] w-[10%] h-[20%] bg-yellow-300" />
+                <div className="absolute left-[-10%] top-[45%] w-[20%] h-[10%] bg-yellow-300" />
+                <div className="absolute right-[-10%] top-[45%] w-[20%] h-[10%] bg-yellow-300" />
+            </div>
+        </motion.div>
     );
 };
 
 export const MinecraftForest = () => {
-    // Generate an array of leaves once on mount using state to trigger re-render
-    const [leaves, setLeaves] = useState<LeafProps[]>([]);
+    // We attach scroll tracking to the window for generic parallax
+    // Because this section is in the normal flow, as we scroll down,
+    // we can make elements move up/down at different speeds.
+    const { scrollY } = useScroll();
 
-    useEffect(() => {
-        const newLeaves: LeafProps[] = [];
-
-        // Generate multiple layers of leaves with varying sizes, speeds, and opacities
-        // to create a rich parallax effect.
-        for (let i = 0; i < 25; i++) {
-            // Front large leaves (fastest, most opaque)
-            newLeaves.push({
-                width: Math.random() * 20 + 15,
-                height: Math.random() * 20 + 15,
-                left: Math.random() * 100,
-                speed: Math.random() * 15 + 10,
-                opacity: Math.random() * 0.4 + 0.6,
-                delay: Math.random() * 20, // Stagger uniformly
-                rotate: Math.random() * 360,
-            });
-
-            // Mid background leaves
-            newLeaves.push({
-                width: Math.random() * 15 + 10,
-                height: Math.random() * 15 + 10,
-                left: Math.random() * 100,
-                speed: Math.random() * 20 + 15,
-                opacity: Math.random() * 0.3 + 0.3,
-                delay: Math.random() * 25,
-                rotate: Math.random() * 360,
-            });
-
-            // Far background leaves (slowest, faint)
-            newLeaves.push({
-                width: Math.random() * 10 + 5,
-                height: Math.random() * 10 + 5,
-                left: Math.random() * 100,
-                speed: Math.random() * 30 + 20,
-                opacity: Math.random() * 0.2 + 0.1,
-                delay: Math.random() * 30,
-                rotate: Math.random() * 360,
-            });
-        }
-        setLeaves(newLeaves);
-    }, []);
+    // Parallax values (moves elements slower or faster than the scroll)
+    const backgroundY = useTransform(scrollY, [0, 1000], [0, 200]);
+    const sunY = useTransform(scrollY, [0, 1000], [0, 300]);
 
     return (
-        <div className="absolute inset-0 z-0 overflow-hidden bg-[#1a2b1a] pointer-events-none select-none minecraft-forest-container">
-            {/* Base forest/dirt gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#112211]/80 to-[#221508]/90 z-[1]" />
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none minecraft-forest-container">
+            {/* Base Daytime Sky to Forest Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#87CEEB] via-[#E0F6FF] to-[#34D399] z-[1] opacity-90" />
 
             <style>
                 {`
-                @keyframes leafFallY {
-                    0% { 
-                        transform: translateY(-20vh) rotate(0deg); 
-                    }
-                    100% { 
-                        transform: translateY(120vh) rotate(360deg); 
-                    }
-                }
-
-                .leaf-fall {
-                    animation-name: leafFallY;
-                    animation-timing-function: linear;
-                    animation-iteration-count: infinite;
-                    z-index: 0;
-                    top: -10%; /* Start slightly above the container */
-                }
-
                 .minecraft-forest-container {
                     image-rendering: pixelated;
                 }
                 `}
             </style>
 
-            <div className="relative w-full h-full">
-                {leaves.map((leaf, index) => (
-                    <Leaf key={index} {...leaf} />
-                ))}
-            </div>
+            <motion.div style={{ y: sunY }} className="absolute inset-0 z-[2]">
+                <PixelSun />
+            </motion.div>
+
+            <FloatingPollen />
+
+            {/* Simulated Parallax Background Layers could go here */}
+            <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-[3]">
+                {/* Empty for now, but ready for tree silhouettes */}
+            </motion.div>
         </div>
     );
 };
