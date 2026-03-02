@@ -62,7 +62,7 @@ export const Navbar = () => {
 
         const element = document.getElementById(targetId.substring(1));
         if (element) {
-            const yOffset = -48; // Set offset to push the scroll position slightly up, making the text align closely below the Navbar
+            const yOffset = -80; // Account for navbar: top-6 (24px) + padding (16px) + item height (48px) ≈ 88px, minus a small gap
             const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
 
             window.scrollTo({
