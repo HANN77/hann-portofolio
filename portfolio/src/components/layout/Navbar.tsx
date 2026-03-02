@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Home, User, Lightbulb, Briefcase, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -86,55 +86,76 @@ export const Navbar = () => {
             className="fixed top-6 inset-x-0 w-full flex justify-center z-50 pointer-events-none px-4"
         >
             {/* Retro HUD Box */}
-            <div className="pointer-events-auto relative flex items-center p-2 bg-background pixel-border">
-                {navLinks.map((link) => {
-                    const isActive = activeSection === link.name;
-                    const isHovered = hoveredSection === link.name;
-                    const isFocused = isActive || isHovered;
-                    const Icon = link.icon;
+            <LayoutGroup>
+                <motion.div
+                    layout
+                    className="pointer-events-auto relative flex items-center p-2 bg-background pixel-border gap-1"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                >
+                    {navLinks.map((link) => {
+                        const isActive = activeSection === link.name;
+                        const isHovered = hoveredSection === link.name;
+                        const isFocused = isActive || isHovered;
+                        const Icon = link.icon;
 
-                    return (
-                        <a
-                            key={link.name}
-                            href={link.href}
-                            onMouseEnter={() => setHoveredSection(link.name)}
-                            onMouseLeave={() => setHoveredSection(null)}
-                            onClick={(e) => handleNavClick(e, link.href, link.name)}
-                            className="relative flex items-center justify-center h-12 transition-none z-10 px-4 group cursor-pointer"
-                        >
-                            {/* Chunky Active Indicator Block */}
-                            {isFocused && (
-                                <motion.div
-                                    layoutId="active-indicator"
-                                    className="absolute inset-0 bg-primary border-4 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -z-10"
-                                    transition={{ type: "spring", stiffness: 600, damping: 40 }}
-                                />
-                            )}
-
-                            {/* Content Wrapper */}
-                            <div className="relative flex items-center justify-center z-10 gap-3">
-                                <Icon
-                                    size={20}
-                                    strokeWidth={3}
-                                    className={cn(
-                                        "transition-none",
-                                        isFocused ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-                                    )}
-                                />
-
-                                {(isFocused || true) && (
-                                    <span className={cn(
-                                        "text-xs font-bold tracking-widest uppercase mt-1",
-                                        isFocused ? "text-primary-foreground" : "text-muted-foreground hidden md:block"
-                                    )} style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                                        {link.name}
-                                    </span>
+                        return (
+                            <motion.a
+                                key={link.name}
+                                layout
+                                href={link.href}
+                                onMouseEnter={() => setHoveredSection(link.name)}
+                                onMouseLeave={() => setHoveredSection(null)}
+                                onClick={(e) => handleNavClick(e, link.href, link.name)}
+                                className="relative flex items-center justify-center h-12 z-10 px-3 cursor-pointer overflow-hidden"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                            >
+                                {/* Chunky Active Indicator Block */}
+                                {isFocused && (
+                                    <motion.div
+                                        layoutId="active-indicator"
+                                        className="absolute inset-0 bg-primary border-4 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -z-10"
+                                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                                    />
                                 )}
-                            </div>
-                        </a>
-                    );
-                })}
-            </div>
+
+                                {/* Content Wrapper */}
+                                <motion.div
+                                    layout
+                                    className="relative flex items-center justify-center z-10 gap-3"
+                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                >
+                                    <Icon
+                                        size={20}
+                                        strokeWidth={3}
+                                        className={cn(
+                                            isFocused ? "text-primary-foreground" : "text-muted-foreground"
+                                        )}
+                                    />
+
+                                    {/* Text label — only shows when focused (active or hovered) */}
+                                    <AnimatePresence mode="popLayout">
+                                        {isFocused && (
+                                            <motion.span
+                                                key={`label-${link.name}`}
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                transition={{ duration: 0.15 }}
+                                                className="text-xs font-bold tracking-widest uppercase whitespace-nowrap text-primary-foreground"
+                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                            >
+                                                {link.name}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            </motion.a>
+                        );
+                    })}
+                </motion.div>
+            </LayoutGroup>
         </motion.nav>
     );
 };
