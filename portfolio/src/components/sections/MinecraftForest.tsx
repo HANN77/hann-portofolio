@@ -28,18 +28,17 @@ const FloatingPollen = () => {
             {particles.map((p, i) => (
                 <motion.div
                     key={i}
-                    className="absolute bg-[#eab308] opacity-60" // Yellow pollen
+                    className="absolute bg-[#fbbf24]" // Bright golden pollen
                     style={{
                         width: p.size,
                         height: p.size,
                         left: `${p.x}%`,
                         top: `${p.y}%`,
-                        boxShadow: '0 0 4px rgba(234, 179, 8, 0.8)'
+                        boxShadow: '0 0 8px 2px rgba(251, 191, 36, 0.9)'
                     }}
                     animate={{
                         y: ["-10px", "10px", "-10px"],
                         x: ["-5px", "5px", "-5px"],
-                        opacity: [0.3, 0.8, 0.3],
                     }}
                     transition={{
                         duration: p.duration,
@@ -56,7 +55,7 @@ const FloatingPollen = () => {
 const PixelSun = () => {
     return (
         <motion.div
-            className="absolute top-8 left-8 md:top-16 md:left-24 pointer-events-none opacity-90 z-0"
+            className="absolute top-8 left-8 md:top-12 md:left-20 pointer-events-none z-0"
             animate={{
                 rotate: 360,
             }}
@@ -66,18 +65,20 @@ const PixelSun = () => {
                 ease: "linear"
             }}
         >
-            {/* Minimal CSS Pixel Sun */}
-            <div className="relative w-24 h-24 md:w-32 md:h-32">
-                <div className="absolute inset-2 bg-yellow-300 rounded-full blur-[4px] opacity-40" />
-                <div className="absolute top-[10%] left-[30%] w-[40%] h-[80%] bg-yellow-400 pixel-shadow" />
-                <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-yellow-400 pixel-shadow" />
-                <div className="absolute top-[30%] left-[10%] w-[80%] h-[40%] bg-yellow-400 pixel-shadow" />
+            {/* Bigger, brighter CSS Pixel Sun */}
+            <div className="relative w-32 h-32 md:w-44 md:h-44">
+                {/* Warm glow halo */}
+                <div className="absolute -inset-8 bg-yellow-300 rounded-full blur-[20px] opacity-50" />
+                <div className="absolute inset-2 bg-yellow-300 rounded-full blur-[6px] opacity-50" />
+                <div className="absolute top-[10%] left-[30%] w-[40%] h-[80%] bg-[#fbbf24] pixel-shadow" />
+                <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-[#fbbf24] pixel-shadow" />
+                <div className="absolute top-[30%] left-[10%] w-[80%] h-[40%] bg-[#fbbf24] pixel-shadow" />
 
-                {/* Sun Rays */}
-                <div className="absolute top-[-10%] left-[45%] w-[10%] h-[20%] bg-yellow-300" />
-                <div className="absolute bottom-[-10%] left-[45%] w-[10%] h-[20%] bg-yellow-300" />
-                <div className="absolute left-[-10%] top-[45%] w-[20%] h-[10%] bg-yellow-300" />
-                <div className="absolute right-[-10%] top-[45%] w-[20%] h-[10%] bg-yellow-300" />
+                {/* Sun Rays — brighter */}
+                <div className="absolute top-[-15%] left-[42%] w-[16%] h-[25%] bg-[#fde047]" />
+                <div className="absolute bottom-[-15%] left-[42%] w-[16%] h-[25%] bg-[#fde047]" />
+                <div className="absolute left-[-15%] top-[42%] w-[25%] h-[16%] bg-[#fde047]" />
+                <div className="absolute right-[-15%] top-[42%] w-[25%] h-[16%] bg-[#fde047]" />
             </div>
         </motion.div>
     );
@@ -87,18 +88,18 @@ const PixelSun = () => {
 
 const DistantMountains = () => {
     return (
-        <div className="absolute bottom-0 w-full h-[30%] md:h-[40%] pointer-events-none z-[1] overflow-hidden flex items-end opacity-60">
-            {/* Mountain 1 (Left, Far) */}
-            <div className="absolute -left-[5%] border-b-[30vh] border-l-[25vw] border-r-[25vw] border-transparent border-b-[#8B5A2B] opacity-40"
-                style={{ borderBottomColor: '#a7dbf2' /* atmospheric perspective (blending with sky) */ }} />
+        <div className="absolute bottom-0 w-full h-[30%] md:h-[40%] pointer-events-none z-[1] overflow-hidden flex items-end">
+            {/* Mountain 1 (Left, Far) — more vivid */}
+            <div className="absolute -left-[5%] border-b-[30vh] border-l-[25vw] border-r-[25vw] border-transparent opacity-70"
+                style={{ borderBottomColor: '#7dd3fc' }} />
 
             {/* Mountain 2 (Right, Far) */}
-            <div className="absolute -right-[10%] border-b-[40vh] border-l-[30vw] border-r-[30vw] border-transparent border-b-[#8B5A2B] opacity-50"
-                style={{ borderBottomColor: '#8ecae6' }} />
+            <div className="absolute -right-[10%] border-b-[40vh] border-l-[30vw] border-r-[30vw] border-transparent opacity-80"
+                style={{ borderBottomColor: '#38bdf8' }} />
 
             {/* Mountain 3 (Center, Closer) */}
-            <div className="absolute left-[30%] border-b-[25vh] border-l-[20vw] border-r-[20vw] border-transparent border-b-[#8B5A2B] opacity-80"
-                style={{ borderBottomColor: '#7dd3fc' }} />
+            <div className="absolute left-[30%] border-b-[25vh] border-l-[20vw] border-r-[20vw] border-transparent opacity-90"
+                style={{ borderBottomColor: '#0ea5e9' }} />
 
             {/* Pixelation filter to make the CSS triangles look 8-bit */}
             <div className="absolute inset-0 backdrop-blur-[2px] bg-white/5" style={{ imageRendering: 'pixelated' }} />
@@ -124,7 +125,7 @@ const DaytimeClouds = () => {
             height: Math.random() * 30 + 20,
             top: Math.random() * 30, // Keep in upper 30%
             speed: Math.random() * 80 + 40,
-            opacity: Math.random() * 0.4 + 0.3,
+            opacity: Math.random() * 0.4 + 0.5,
             delay: Math.random() * 100,
         }));
         setClouds(newClouds);
@@ -220,8 +221,12 @@ export const MinecraftForest = () => {
 
     return (
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none minecraft-forest-container">
-            {/* Base Daytime Sky to Forest Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#87CEEB] via-[#E0F6FF] to-[#34D399] z-[1] opacity-90" />
+            {/* Vibrant Daytime Sky to Forest Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#38bdf8] via-[#7dd3fc] to-[#34d399] z-[1]" />
+
+            {/* Warm sunlight radial glow */}
+            <div className="absolute inset-0 z-[1] opacity-40"
+                style={{ background: 'radial-gradient(ellipse at 15% 15%, rgba(251, 191, 36, 0.5) 0%, transparent 45%), radial-gradient(ellipse at 50% 80%, rgba(52, 211, 153, 0.3) 0%, transparent 50%)' }} />
 
             <style>
                 {`
