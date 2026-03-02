@@ -14,9 +14,9 @@ const techStack = [
 
 export const SkillsSection = () => {
     return (
-        <section id="skills" className="py-24 px-6 md:px-12 relative overflow-hidden text-foreground">
+        <section id="skills" className="min-h-screen py-24 px-6 md:px-12 relative overflow-hidden text-foreground flex items-center">
             <MinecraftCaves />
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className="max-w-7xl w-full mx-auto relative z-10">
                 <div className="mb-16 text-center">
                     <h2 className="text-3xl md:text-5xl font-['Press_Start_2P',_cursive] text-primary mb-8 text-pixel">INVENTORY</h2>
                     <p className="mt-6 text-muted-foreground font-['VT323',_monospace] max-w-2xl mx-auto text-2xl uppercase">

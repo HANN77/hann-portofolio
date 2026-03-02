@@ -31,9 +31,9 @@ const projects = [
 
 export const ProjectsSection = () => {
     return (
-        <section id="projects" className="py-24 px-6 md:px-12 relative overflow-hidden text-foreground">
+        <section id="projects" className="min-h-screen py-24 px-6 md:px-12 relative overflow-hidden text-foreground flex items-center">
             <MinecraftNether />
-            <div className="max-w-7xl mx-auto relative z-10">
+            <div className="max-w-7xl w-full mx-auto relative z-10">
                 <div className="mb-16 text-center">
                     <h2 className="text-3xl md:text-5xl font-['Press_Start_2P',_cursive] text-primary mb-2 text-pixel">STAGE SELECT</h2>
                     <div className="w-24 h-2 bg-foreground mx-auto mt-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" />

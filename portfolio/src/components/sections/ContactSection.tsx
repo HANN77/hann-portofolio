@@ -3,9 +3,9 @@ import { MinecraftEnd } from '@/components/sections/MinecraftEnd';
 
 export const ContactSection = () => {
     return (
-        <section id="contact" className="py-24 px-6 md:px-12 relative overflow-hidden text-foreground">
+        <section id="contact" className="min-h-screen py-24 px-6 md:px-12 relative overflow-hidden text-foreground flex items-center">
             <MinecraftEnd />
-            <div className="max-w-4xl mx-auto text-center relative z-10">
+            <div className="max-w-4xl w-full mx-auto text-center relative z-10">
                 <h2 className="text-3xl md:text-5xl font-['Press_Start_2P',_cursive] text-primary mb-6 text-pixel">
                     HIGH SCORE ENTRY
                 </h2>

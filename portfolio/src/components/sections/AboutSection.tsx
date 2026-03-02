@@ -3,9 +3,9 @@ import { MinecraftForest } from '@/components/sections/MinecraftForest';
 
 export const AboutSection = () => {
     return (
-        <section id="about" className="py-32 px-6 md:px-12 relative overflow-hidden text-foreground">
+        <section id="about" className="min-h-screen py-32 px-6 md:px-12 relative overflow-hidden text-foreground flex items-center">
             <MinecraftForest />
-            <div className="max-w-6xl mx-auto relative flex flex-col items-center z-10">
+            <div className="max-w-6xl w-full mx-auto relative flex flex-col items-center z-10">
 
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
