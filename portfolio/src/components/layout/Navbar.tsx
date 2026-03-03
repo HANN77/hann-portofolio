@@ -67,6 +67,10 @@ const sectionThemes: Record<string, {
     },
 };
 
+// Shared transition configs for synchronization
+const sharedSpring = { type: "spring" as const, stiffness: 400, damping: 30 };
+const colorTransition = { duration: 0.35, ease: "easeOut" as const };
+
 // Tiny pixel decorations for each section theme
 const SectionDecorations = ({ section }: { section: string }) => {
     const decorations: Record<string, React.ReactNode> = {
@@ -211,18 +215,17 @@ export const Navbar = () => {
                         borderColor: theme.border,
                         boxShadow: `4px 4px 0px 0px ${theme.shadow}`,
                     }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    transition={{
+                        layout: sharedSpring,
+                        backgroundColor: colorTransition,
+                        borderColor: colorTransition,
+                        boxShadow: colorTransition,
+                    }}
                     style={{
                         border: '4px solid',
                         imageRendering: 'pixelated' as const,
                     }}
                 >
-                    {/* Ambient glow behind the navbar */}
-                    <motion.div
-                        className="absolute inset-0 pointer-events-none -z-10"
-                        animate={{ boxShadow: theme.glow }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                    />
 
                     {/* Section-specific pixel decorations */}
                     <SectionDecorations section={activeSection} />
@@ -251,7 +254,7 @@ export const Navbar = () => {
                                 className="relative flex items-center justify-center h-12 z-10 px-3 cursor-pointer overflow-hidden"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                transition={sharedSpring}
                             >
                                 {/* Single indicator — only ONE item renders this at a time */}
                                 {showIndicator && (
@@ -261,12 +264,15 @@ export const Navbar = () => {
                                         animate={{
                                             backgroundColor: itemTheme.activeBg,
                                             borderColor: itemTheme.border,
-                                        }}
-                                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                                        style={{
-                                            border: '4px solid',
                                             boxShadow: `4px 4px 0px 0px ${itemTheme.shadow}`,
                                         }}
+                                        transition={{
+                                            layout: sharedSpring,
+                                            backgroundColor: colorTransition,
+                                            borderColor: colorTransition,
+                                            boxShadow: colorTransition,
+                                        }}
+                                        style={{ border: '4px solid' }}
                                     />
                                 )}
 
@@ -274,11 +280,11 @@ export const Navbar = () => {
                                 <motion.div
                                     layout
                                     className="relative flex items-center justify-center z-10 gap-3"
-                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                    transition={sharedSpring}
                                 >
                                     <motion.div
                                         animate={{ color: showIndicator ? itemTheme.activeText : theme.inactiveText }}
-                                        transition={{ duration: 0.3 }}
+                                        transition={colorTransition}
                                     >
                                         <Icon size={20} strokeWidth={3} />
                                     </motion.div>
@@ -288,13 +294,12 @@ export const Navbar = () => {
                                             <motion.span
                                                 key={`label-${link.name}`}
                                                 initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
+                                                animate={{ opacity: 1, color: itemTheme.activeText }}
                                                 exit={{ opacity: 0 }}
-                                                transition={{ duration: 0.15 }}
+                                                transition={colorTransition}
                                                 className="text-xs font-bold tracking-widest uppercase whitespace-nowrap"
                                                 style={{
                                                     fontFamily: "'Press Start 2P', cursive",
-                                                    color: itemTheme.activeText,
                                                 }}
                                             >
                                                 {link.name}
