@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Home, User, Lightbulb, Briefcase, Mail } from 'lucide-react';
 
+/* ───────────────────────── NAV CONFIG ───────────────────────── */
 const navLinks = [
     { name: 'Home', href: '#home', icon: Home },
     { name: 'About', href: '#about', icon: User },
@@ -10,158 +11,83 @@ const navLinks = [
     { name: 'Contact', href: '#contact', icon: Mail },
 ];
 
-// Theme config for each section
+/* ─── Section theme palette (reused from previous design) ──── */
 const sectionThemes: Record<string, {
-    bg: string;
-    border: string;
-    activeBg: string;
-    activeText: string;
-    inactiveText: string;
-    shadow: string;
+    accent: string;
+    accentText: string;
     glow: string;
 }> = {
     Home: {
-        bg: '#1e1e2e',
-        border: '#ffffff',
-        activeBg: '#fbbf24',
-        activeText: '#1e1e2e',
-        inactiveText: '#a0a0a0',
-        shadow: 'rgba(0,0,0,1)',
-        glow: 'none',
+        accent: '#fbbf24',
+        accentText: '#1e1e2e',
+        glow: 'rgba(251,191,36,0.35)',
     },
     About: {
-        bg: '#0f2e1a',
-        border: '#ffffff',
-        activeBg: '#34d399',
-        activeText: '#0f2e1a',
-        inactiveText: '#a0a0a0',
-        shadow: 'rgba(0,0,0,1)',
-        glow: 'none',
+        accent: '#34d399',
+        accentText: '#0f2e1a',
+        glow: 'rgba(52,211,153,0.35)',
     },
     Skills: {
-        bg: '#0c1929',
-        border: '#ffffff',
-        activeBg: '#00cec9',
-        activeText: '#0c1929',
-        inactiveText: '#a0a0a0',
-        shadow: 'rgba(0,0,0,1)',
-        glow: 'none',
+        accent: '#00cec9',
+        accentText: '#0c1929',
+        glow: 'rgba(0,206,201,0.35)',
     },
     Projects: {
-        bg: '#1a0a00',
-        border: '#ffffff',
-        activeBg: '#ff6348',
-        activeText: '#1a0a00',
-        inactiveText: '#a0a0a0',
-        shadow: 'rgba(0,0,0,1)',
-        glow: 'none',
+        accent: '#ff6348',
+        accentText: '#1a0a00',
+        glow: 'rgba(255,99,72,0.35)',
     },
     Contact: {
-        bg: '#0d0015',
-        border: '#ffffff',
-        activeBg: '#a855f7',
-        activeText: '#0d0015',
-        inactiveText: '#a0a0a0',
-        shadow: 'rgba(0,0,0,1)',
-        glow: 'none',
+        accent: '#a855f7',
+        accentText: '#0d0015',
+        glow: 'rgba(168,85,247,0.35)',
     },
 };
 
-// Shared transition configs for synchronization
-const sharedSpring = { type: "spring" as const, stiffness: 400, damping: 30 };
-const colorTransition = { duration: 0.35, ease: "easeOut" as const };
+/* ─── Shared spring config — light & snappy ─── */
+const springTransition = { type: 'spring' as const, stiffness: 500, damping: 35, mass: 0.8 };
+const colorTransition = { duration: 0.4, ease: 'easeOut' as const };
 
-// Tiny pixel decorations for each section theme
-const SectionDecorations = ({ section }: { section: string }) => {
-    const decorations: Record<string, React.ReactNode> = {
-        Home: (
-            <>
-                {/* Tiny pixel stars */}
-                <div className="absolute top-1 left-2 w-1 h-1 bg-yellow-300 opacity-80" />
-                <div className="absolute top-3 right-3 w-[3px] h-[3px] bg-yellow-200 opacity-60" />
-                <div className="absolute bottom-2 left-4 w-[2px] h-[2px] bg-yellow-400 opacity-70" />
-            </>
-        ),
-        About: (
-            <>
-                {/* Tiny pixel leaves */}
-                <div className="absolute top-1 left-2 w-[6px] h-[4px] bg-emerald-400 opacity-80" style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }} />
-                <div className="absolute bottom-1 right-3 w-[5px] h-[3px] bg-green-300 opacity-60" style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }} />
-                <div className="absolute top-2 right-8 w-[4px] h-[3px] bg-emerald-300 opacity-70" style={{ clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)' }} />
-            </>
-        ),
-        Skills: (
-            <>
-                {/* Tiny pixel crystals */}
-                <div className="absolute top-1 left-3 w-[3px] h-[6px] bg-cyan-400 opacity-80" style={{ clipPath: 'polygon(50% 0%, 100% 40%, 100% 100%, 0% 100%, 0% 40%)' }} />
-                <div className="absolute bottom-1 right-4 w-[3px] h-[5px] bg-teal-300 opacity-60" style={{ clipPath: 'polygon(50% 0%, 100% 40%, 100% 100%, 0% 100%, 0% 40%)' }} />
-                <div className="absolute top-2 right-2 w-[2px] h-[4px] bg-cyan-300 opacity-70" />
-            </>
-        ),
-        Projects: (
-            <>
-                {/* Tiny pixel embers */}
-                <div className="absolute top-2 left-2 w-[3px] h-[3px] bg-orange-400 opacity-90" style={{ boxShadow: '0 0 4px rgba(255,165,0,0.8)' }} />
-                <div className="absolute bottom-2 right-3 w-[2px] h-[2px] bg-red-400 opacity-70" style={{ boxShadow: '0 0 3px rgba(255,69,0,0.6)' }} />
-                <div className="absolute top-1 right-6 w-[2px] h-[2px] bg-yellow-400 opacity-80" style={{ boxShadow: '0 0 3px rgba(255,200,0,0.6)' }} />
-            </>
-        ),
-        Contact: (
-            <>
-                {/* Tiny pixel portal particles */}
-                <div className="absolute top-1 left-3 w-[3px] h-[3px] bg-purple-400 opacity-80" style={{ boxShadow: '0 0 4px rgba(168,85,247,0.6)' }} />
-                <div className="absolute bottom-2 right-2 w-[2px] h-[2px] bg-pink-400 opacity-70" style={{ boxShadow: '0 0 3px rgba(232,121,249,0.5)' }} />
-                <div className="absolute top-3 right-5 w-[2px] h-[2px] bg-violet-300 opacity-60" style={{ boxShadow: '0 0 3px rgba(167,139,250,0.5)' }} />
-            </>
-        ),
-    };
-
-    return (
-        <AnimatePresence mode="wait">
-            <motion.div
-                key={section}
-                className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-            >
-                {decorations[section] || null}
-            </motion.div>
-        </AnimatePresence>
-    );
-};
-
+/* ═════════════════════════════════════════════════════════════ */
 export const Navbar = () => {
     const [activeSection, setActiveSection] = useState('Home');
-    const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+    const [scrollProgress, setScrollProgress] = useState(0);
     const isScrolling = useRef(false);
-    const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+    const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const theme = useMemo(() => sectionThemes[activeSection] || sectionThemes.Home, [activeSection]);
+    const theme = useMemo(
+        () => sectionThemes[activeSection] || sectionThemes.Home,
+        [activeSection],
+    );
 
-    // Update active section based on scroll position
+    /* ─── Scroll spy ─── */
     useEffect(() => {
         let ticking = false;
 
         const handleScroll = () => {
             if (isScrolling.current) return;
-
             if (!ticking) {
                 window.requestAnimationFrame(() => {
-                    const sections = navLinks.map(link => link.name.toLowerCase());
+                    /* Active section detection */
+                    const sections = navLinks.map((l) => l.name.toLowerCase());
                     let current = 'Home';
-
                     for (const section of sections) {
-                        const element = document.getElementById(section);
-                        if (element) {
-                            const rect = element.getBoundingClientRect();
+                        const el = document.getElementById(section);
+                        if (el) {
+                            const rect = el.getBoundingClientRect();
                             if (rect.top <= 150 && rect.bottom >= 150) {
                                 current = section.charAt(0).toUpperCase() + section.slice(1);
                             }
                         }
                     }
                     setActiveSection(current);
+
+                    /* Scroll progress (0-1) */
+                    const scrollTop = window.scrollY;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    setScrollProgress(docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0);
+
                     ticking = false;
                 });
                 ticking = true;
@@ -169,149 +95,260 @@ export const Navbar = () => {
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string, sectionName: string) => {
-        e.preventDefault();
+    /* ─── Nav click handler ─── */
+    const handleNavClick = useCallback(
+        (e: React.MouseEvent<HTMLAnchorElement>, href: string, name: string) => {
+            e.preventDefault();
+            isScrolling.current = true;
+            setActiveSection(name);
 
-        isScrolling.current = true;
-        setActiveSection(sectionName);
+            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
 
-        if (scrollTimeout.current) {
-            clearTimeout(scrollTimeout.current);
-        }
+            const el = document.getElementById(href.substring(1));
+            if (el) {
+                const y = el.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
 
-        const element = document.getElementById(targetId.substring(1));
-        if (element) {
-            const yOffset = -80;
-            const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+            scrollTimeout.current = setTimeout(() => {
+                isScrolling.current = false;
+            }, 1000);
+        },
+        [],
+    );
 
-            window.scrollTo({
-                top: y,
-                behavior: 'smooth'
-            });
-        }
-
-        scrollTimeout.current = setTimeout(() => {
-            isScrolling.current = false;
-        }, 1000);
-    };
-
+    /* ═══════════════════  RENDER  ══════════════════════════════ */
     return (
-        <motion.nav
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
-            style={{ willChange: "transform, opacity" }}
-            className="fixed top-6 inset-x-0 w-full flex justify-center z-50 pointer-events-none px-4"
-        >
-            <LayoutGroup>
+        <>
+            {/* ── Desktop: vertical left dock ── */}
+            <motion.nav
+                aria-label="Main navigation"
+                initial={{ x: -80, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.7, ease: 'easeOut', delay: 0.6 }}
+                className="fixed left-3 top-0 bottom-0 z-50 hidden md:flex flex-col items-center justify-center"
+                style={{ willChange: 'transform, opacity' }}
+            >
+                <LayoutGroup>
+                    <motion.div
+                        layout
+                        className="relative flex flex-col items-center gap-1 p-2"
+                        animate={{
+                            borderColor: theme.accent,
+                            boxShadow: `4px 4px 0px 0px rgba(0,0,0,1)`,
+                        }}
+                        transition={{
+                            layout: springTransition,
+                            borderColor: colorTransition,
+                            boxShadow: colorTransition,
+                        }}
+                        style={{
+                            border: '3px solid',
+                            backgroundColor: 'rgba(10,10,20,0.88)',
+                            backdropFilter: 'blur(6px)',
+                            imageRendering: 'pixelated' as const,
+                        }}
+                    >
+                        {navLinks.map((link) => {
+                            const isActive = activeSection === link.name;
+                            const isHovered = hoveredItem === link.name;
+                            const itemTheme = sectionThemes[link.name] || sectionThemes.Home;
+                            const Icon = link.icon;
+
+                            return (
+                                <motion.a
+                                    key={link.name}
+                                    href={link.href}
+                                    aria-current={isActive ? 'page' : undefined}
+                                    onClick={(e) => handleNavClick(e, link.href, link.name)}
+                                    onMouseEnter={() => setHoveredItem(link.name)}
+                                    onMouseLeave={() => setHoveredItem(null)}
+                                    className="relative flex items-center justify-center w-11 h-11 z-10 cursor-pointer"
+                                    whileHover={{ scale: 1.12 }}
+                                    whileTap={{ scale: 0.88 }}
+                                    transition={springTransition}
+                                >
+                                    {/* Active slot indicator */}
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="active-slot"
+                                            className="absolute inset-0 -z-10"
+                                            animate={{
+                                                backgroundColor: itemTheme.accent,
+                                                boxShadow: `0 0 12px ${itemTheme.glow}, 3px 3px 0px 0px rgba(0,0,0,1)`,
+                                            }}
+                                            transition={{
+                                                layout: springTransition,
+                                                backgroundColor: colorTransition,
+                                                boxShadow: colorTransition,
+                                            }}
+                                            style={{
+                                                border: '2px solid rgba(255,255,255,0.25)',
+                                            }}
+                                        />
+                                    )}
+
+                                    {/* Icon */}
+                                    <motion.div
+                                        animate={{
+                                            color: isActive
+                                                ? itemTheme.accentText
+                                                : isHovered
+                                                    ? itemTheme.accent
+                                                    : 'rgba(160,160,160,0.8)',
+                                        }}
+                                        transition={colorTransition}
+                                    >
+                                        <Icon size={18} strokeWidth={2.5} />
+                                    </motion.div>
+
+                                    {/* Hover tooltip */}
+                                    <AnimatePresence>
+                                        {isHovered && (
+                                            <motion.span
+                                                initial={{ opacity: 0, x: -6, scale: 0.9 }}
+                                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                                exit={{ opacity: 0, x: -6, scale: 0.9 }}
+                                                transition={{ duration: 0.18, ease: 'easeOut' }}
+                                                className="absolute left-full ml-3 whitespace-nowrap px-3 py-2 text-white z-50 pointer-events-none"
+                                                style={{
+                                                    fontFamily: "'Press Start 2P', cursive",
+                                                    fontSize: '0.55rem',
+                                                    letterSpacing: '0.1em',
+                                                    backgroundColor: 'rgba(10,10,20,0.92)',
+                                                    border: `2px solid ${itemTheme.accent}`,
+                                                    boxShadow: `3px 3px 0px 0px rgba(0,0,0,1)`,
+                                                    imageRendering: 'pixelated' as const,
+                                                }}
+                                            >
+                                                {link.name.toUpperCase()}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.a>
+                            );
+                        })}
+
+                        {/* ─── XP / Scroll progress bar ─── */}
+                        <div
+                            className="w-7 h-[3px] mt-2 overflow-hidden"
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.1)',
+                                border: '1px solid rgba(255,255,255,0.15)',
+                            }}
+                        >
+                            <motion.div
+                                className="h-full origin-left"
+                                animate={{
+                                    scaleX: scrollProgress,
+                                    backgroundColor: theme.accent,
+                                }}
+                                transition={{ duration: 0.15, ease: 'linear' }}
+                                style={{ willChange: 'transform' }}
+                            />
+                        </div>
+                    </motion.div>
+                </LayoutGroup>
+            </motion.nav>
+
+            {/* ── Mobile: bottom hotbar ── */}
+            <motion.nav
+                aria-label="Main navigation"
+                initial={{ y: 80, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.6 }}
+                className="fixed bottom-3 inset-x-0 z-50 flex md:hidden justify-center px-4"
+                style={{ willChange: 'transform, opacity' }}
+            >
                 <motion.div
-                    layout
-                    className="pointer-events-auto relative flex items-center p-2 gap-1 overflow-hidden"
+                    className="flex items-center gap-1 p-2"
                     animate={{
-                        backgroundColor: theme.bg,
-                        borderColor: theme.border,
-                        boxShadow: `4px 4px 0px 0px ${theme.shadow}`,
+                        borderColor: theme.accent,
+                        boxShadow: '4px 4px 0px 0px rgba(0,0,0,1)',
                     }}
                     transition={{
-                        layout: sharedSpring,
-                        backgroundColor: colorTransition,
                         borderColor: colorTransition,
                         boxShadow: colorTransition,
                     }}
                     style={{
-                        border: '4px solid',
+                        border: '3px solid',
+                        backgroundColor: 'rgba(10,10,20,0.92)',
+                        backdropFilter: 'blur(6px)',
                         imageRendering: 'pixelated' as const,
                     }}
                 >
-
-                    {/* Section-specific pixel decorations */}
-                    <SectionDecorations section={activeSection} />
-
                     {navLinks.map((link) => {
                         const isActive = activeSection === link.name;
-                        const isHovered = hoveredSection === link.name;
-                        // Only ONE item gets the indicator: hover takes priority, else the active one
-                        const showIndicator = hoveredSection
-                            ? isHovered
-                            : isActive;
-                        // Show text label when indicator is visible
-                        const showLabel = showIndicator;
-                        // Use the *displayed item's* own theme for indicator color
                         const itemTheme = sectionThemes[link.name] || sectionThemes.Home;
                         const Icon = link.icon;
 
                         return (
                             <motion.a
                                 key={link.name}
-                                layout
                                 href={link.href}
-                                onMouseEnter={() => setHoveredSection(link.name)}
-                                onMouseLeave={() => setHoveredSection(null)}
+                                aria-current={isActive ? 'page' : undefined}
                                 onClick={(e) => handleNavClick(e, link.href, link.name)}
-                                className="relative flex items-center justify-center h-12 z-10 px-3 cursor-pointer overflow-hidden"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                transition={sharedSpring}
+                                className="relative flex items-center justify-center w-11 h-11 z-10 cursor-pointer"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.88 }}
+                                transition={springTransition}
                             >
-                                {/* Single indicator — only ONE item renders this at a time */}
-                                {showIndicator && (
+                                {isActive && (
                                     <motion.div
-                                        layoutId="active-indicator"
+                                        layoutId="active-slot-mobile"
                                         className="absolute inset-0 -z-10"
                                         animate={{
-                                            backgroundColor: itemTheme.activeBg,
-                                            borderColor: itemTheme.border,
-                                            boxShadow: `4px 4px 0px 0px ${itemTheme.shadow}`,
+                                            backgroundColor: itemTheme.accent,
+                                            boxShadow: `0 0 10px ${itemTheme.glow}, 3px 3px 0px 0px rgba(0,0,0,1)`,
                                         }}
                                         transition={{
-                                            layout: sharedSpring,
+                                            layout: springTransition,
                                             backgroundColor: colorTransition,
-                                            borderColor: colorTransition,
                                             boxShadow: colorTransition,
                                         }}
-                                        style={{ border: '4px solid' }}
+                                        style={{
+                                            border: '2px solid rgba(255,255,255,0.2)',
+                                        }}
                                     />
                                 )}
 
-                                {/* Content */}
                                 <motion.div
-                                    layout
-                                    className="relative flex items-center justify-center z-10 gap-3"
-                                    transition={sharedSpring}
+                                    animate={{
+                                        color: isActive
+                                            ? itemTheme.accentText
+                                            : 'rgba(160,160,160,0.7)',
+                                    }}
+                                    transition={colorTransition}
                                 >
-                                    <motion.div
-                                        animate={{ color: showIndicator ? itemTheme.activeText : theme.inactiveText }}
-                                        transition={colorTransition}
-                                    >
-                                        <Icon size={20} strokeWidth={3} />
-                                    </motion.div>
-
-                                    <AnimatePresence mode="popLayout">
-                                        {showLabel && (
-                                            <motion.span
-                                                key={`label-${link.name}`}
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1, color: itemTheme.activeText }}
-                                                exit={{ opacity: 0 }}
-                                                transition={colorTransition}
-                                                className="text-xs font-bold tracking-widest uppercase whitespace-nowrap"
-                                                style={{
-                                                    fontFamily: "'Press Start 2P', cursive",
-                                                }}
-                                            >
-                                                {link.name}
-                                            </motion.span>
-                                        )}
-                                    </AnimatePresence>
+                                    <Icon size={18} strokeWidth={2.5} />
                                 </motion.div>
                             </motion.a>
                         );
                     })}
+
+                    {/* Mobile XP bar */}
+                    <div
+                        className="absolute -top-[5px] left-2 right-2 h-[3px] overflow-hidden"
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.08)',
+                        }}
+                    >
+                        <motion.div
+                            className="h-full origin-left"
+                            animate={{
+                                scaleX: scrollProgress,
+                                backgroundColor: theme.accent,
+                            }}
+                            transition={{ duration: 0.15, ease: 'linear' }}
+                            style={{ willChange: 'transform' }}
+                        />
+                    </div>
                 </motion.div>
-            </LayoutGroup>
-        </motion.nav>
+            </motion.nav>
+        </>
     );
 };
